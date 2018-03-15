@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        *{
+            margin: 0;
+            padding: 0;
+        }
+        li{
+            list-style: none;
+        }
+        #box{
+            position: relative;
+            width: 490px;
+            height: 280px;
+            margin:50px auto;
+        }
+        #box .pic{
+            overflow: hidden;
+            position: absolute;
+            left:0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+        }
+        #box .pic ul{
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 1000%;
+            height: 100%;
+        }
+        #box .pic ul.transition{
+            transition: left 0.3s;
+        }
+        #box .pic ul li{
+            float: left;
+            width: 10%;
+            height: 280px;
+        }
+        #box .pic ul li img{
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+        #box .tab{
+            overflow: hidden;
+            position: absolute;
+            bottom: 10px;
+            left: 50%;
+            width: 80px;
+            height: 14px;
+            border-radius: 7px;
+            background: rgba(0,0,0,0.4);
+            margin-left: -32px;
+        }
+        #box .tab ul{
+            width: 200%;
+            height: 100%;
+        }
+        #box .tab ul li{
+            float: left;
+            width: 10px;
+            height: 10px;
+            border-radius: 100%;
+            background: #fff;
+            margin: 2px 3px;
+            cursor: pointer;
+            transition: background-color 0.2s;
+        }
+        #box .tab ul li.on{
+            background: #0ff;
+        }
+        #box .btn{
+            display: none;
+        }
+        #box:hover .btn{
+            display: block;
+        }
+        #box .btn div{
+            position: absolute;
+            top: 50%;
+            width: 20px;
+            height: 30px;
+            background: rgba(0,0,0,0.25);
+            line-height: 30px;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            color: #fff;
+            cursor: pointer;
+        }
+        #box .btn div:hover{
+            background: rgba(0,0,0,0.6);
+        }
+        #box .btn div.left{
+            left: 0;
+            border-radius: 0 25px 25px 0;
+        }
+        #box .btn div.right{
+            right: 0;
+            border-radius: 25px 0 0 25px ;
+        }
+    </style>
+</head>
+<body>
+<div id="box">
+
+    <!--图片部分-->
+    <div class="pic">
+        <ul class="transition">
+            <li><a href=""><img src="imgs/m55.jpg" alt=""></a></li>
+            <li><a href=""><img src="imgs/m11.jpg" alt=""></a></li>
+            <li><a href=""><img src="imgs/m22.jpg" alt=""></a></li>
+            <li><a href=""><img src="imgs/m33.jpg" alt=""></a></li>
+            <li><a href=""><img src="imgs/m44.jpg" alt=""></a></li>
+            <li><a href=""><img src="imgs/m55.jpg" alt=""></a></li>
+            <li><a href=""><img src="imgs/m11.jpg" alt=""></a></li>
+        </ul>
+    </div>
+
+    <!--切换卡部分-->
+    <div class="tab">
+        <ul>
+            <li class="on"></li>
+            <li></li>
+            <li></li>
+            <li></li>
+            <li></li>
+        </ul>
+    </div>
+
+    <!--左右部分-->
+    <div class="btn">
+        <div class="left"> < </div>
+        <div class="right"> > </div>
+    </div>
+</div>
+<script>
+
+    var oBox = document.getElementById("box"),
+            aTabLi = oBox.querySelectorAll(".tab ul li"),
+            oPicUl = oBox.querySelector(".pic ul"),
+            aBtn = oBox.querySelectorAll(".btn div"),
+            length = aTabLi.length,
+            index = 0,
+            pW = 490;//获取宽度，增加复用性
+
+    //
+    for(var i=0;i<length;i++){
+        (function(i){
+            aTabLi[i].onclick = function () {
+                index!==i && change(i);
+                /*if(index!==i){
+                    change(i);
+                }*/
+            }
+        })(i);
+    }
+
+    var clickTime = 0;
+    //左按钮
+    aBtn[0].onclick = function(){
+        if(new Date()-clickTime>350)/*控制按钮点击生效时间*/{
+            change(index-1);
+            clickTime = new Date();
+        }
+    };
+    //右按钮
+    aBtn[1].onclick = function(){
+        if(new Date()-clickTime>350){
+            change(index+1);
+            clickTime = new Date();
+        }
+    };
+
+    //自动轮播
+    var timer;
+    oBox.onmouseenter = function(){
+        clearInterval(timer);
+    };
+    oBox.onmouseleave = auto();
+    function auto(){
+        timer = setInterval(function(){
+            change(index+1);
+        },2000);
+        return auto;
+    }
+
+
+    //所有变化的封装
+    function change(i){
+        aTabLi[index].classList.remove("on");
+        index = i;
+        if(index>=length){
+            index = 0;
+            fn(1);
+        }
+        if(index<0){
+            index = length-1;
+            fn(length);
+        }
+        aTabLi[index].classList.add("on");
+        oPicUl.style.left = -(i+1)*pW  + "px";
+    }
+
+    //提取出来的变化
+    function fn(x){
+        setTimeout(function(){
+            oPicUl.classList.remove("transition");
+            oPicUl.style.left = "-"+x+"00%";
+            setTimeout(function(){
+                oPicUl.classList.add("transition");
+            },20);
+        },300)
+    }
+</script>
+</body>
+</html>
